@@ -27,7 +27,7 @@ include ('navbar.php')
       </div>
     <?php endforeach; ?>
   </section>
-  <?php include('includes/footer.php'); ?>
+  <?php include('footer.php'); ?>
 </body>
 </html>
 

@@ -1,6 +1,8 @@
 <?php
 session_start();
 require_once '../modele/coachModel.php';
+require_once '../modele/seanceModel.php';
+require_once '../modele/bd.inc.php';
 
 $action = isset($_GET['action']) ? $_GET['action'] : 'index';
 
@@ -23,9 +25,19 @@ switch ($action) {
         // Déconnecter l'utilisateur
         logout();
         break;
+    case 'seance':
+        $connexion = connexionPDO();
+        // Vérifier si l'indice 'jour' est défini dans $_POST
+        if(isset($_POST['jour'])) {
+            // Récupérer les séances en fonction du jour sélectionné
+            $seances = getSeances($connexion, $_POST['jour']);
+            // Inclure la vue seance.php
+            include('../vue/seance.php');
+        break;
     default:
         // Gérer les cas d'action non valide
         break;
+}
 }
 
 function loginProcess() {

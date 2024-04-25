@@ -37,7 +37,7 @@ include ('navbar.php')
   </script>
 
   </section>
-  <?php include('includes/footer.php'); ?>
+  <?php include('footer.php'); ?>
 </body>
 </html>
 
