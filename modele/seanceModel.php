@@ -40,4 +40,23 @@ function getSeances($connexion, $jourSelectionne) {
         return $seances;
     }
 }
+function inscriptionSeance($connexion, $id_seance, $nom, $prenom) {
+    // Requête pour inscrire l'utilisateur à la séance
+    $reqInscription = "INSERT INTO inscriptionSeance (idSeance, nom, prenom) VALUES (:idSeance, :nom, :prenom)";
+
+    // Préparation de la requête
+    $stmt = $connexion->prepare($reqInscription);
+
+    // Liaison des paramètres
+    $stmt->bindParam(':idSeance', $id_seance);
+    $stmt->bindParam(':nom', $nom);
+    $stmt->bindParam(':prenom', $prenom);
+
+    // Exécution de la requête
+    $result = $stmt->execute();
+
+    // Retournez true si l'inscription réussit, sinon retournez false
+    return $result;
+}
+
 ?>

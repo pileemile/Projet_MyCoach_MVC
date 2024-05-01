@@ -62,6 +62,27 @@ switch ($action) {
         // Traiter la soumission du formulaire d'inscription
         inscriptionProcess();
         break;
+        case 'inscriptionSeance':
+            $id_seance = isset($_POST['id_seance']) ? $_POST['id_seance'] : null;
+            $nom = isset($_POST['nom']) ? $_POST['nom'] : null;
+            $prenom = isset($_POST['prenom']) ? $_POST['prenom'] : null;
+            
+            // Appel de la fonction d'inscription à la séance depuis le modèle
+            $resultatInscription = inscriptionSeance($connexion, $id_seance, $nom, $prenom);
+            if ($resultatInscription) {
+                // Affichez un message de succès en utilisant JavaScript
+                echo '<script>alert("Inscription réussie !");</script>';
+                // Redirigez vers une page de confirmation ou autre
+                header("Location: ../controleur/controller.php?action=seance");
+                exit;
+            } else {
+                // Affichez un message d'échec en utilisant JavaScript
+                echo '<script>alert("Échec de l\'inscription. Veuillez réessayer.");</script>';
+                // Gérez l'échec de l'inscription
+                // Peut-être afficher un message d'erreur ou rediriger vers une autre page
+            }
+            break;
+        
     default:
         // Gérer les cas d'action non valide
         break;

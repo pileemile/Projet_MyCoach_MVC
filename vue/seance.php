@@ -15,8 +15,7 @@
         <option value="Dimanche">Dimanche</option>
         <option value="*">Toutes les séances</option>
     </select>
-</form>
-
+    </form>
 
     <!-- Affichage des séances -->
     <div id="service">
@@ -25,6 +24,13 @@
             <h3>Sport : <?php echo $seance['sport_nom']; ?>, Niveau : <?php echo $seance['niveau']; ?></h3>
             <h4>Jour : <?php echo $seance['jour']; ?>, Horaire : <?php echo $seance['horraire']; ?></h4>
             <p>Salle : <?php echo $seance['salle_nom']; ?>, Adresse : <?php echo $seance['Adresse']; ?>, <?php echo $seance['CP']; ?> <?php echo $seance['Ville']; ?></p>
+            <!-- Formulaire d'inscription à la séance -->
+            <form method="post" action="../controleur/controller.php?action=inscriptionSeance">
+                <input type="hidden" name="id_seance" value="<?php echo $seance['id']; ?>">
+                <input type="hidden" name="nom" value="<?php echo $_SESSION['nom']; ?>">
+                <input type="hidden" name="prenom" value="<?php echo $_SESSION['prenom']; ?>">
+                <button type="submit">S'inscrire</button>
+            </form>
         <?php endforeach; ?>
     <?php else: ?>
         <p>Aucune séance trouvée.</p>
