@@ -9,7 +9,7 @@
   <nav>
     <a href="../controleur/controller.php?action=index">Accueil</a>
     <a href="../controleur/controller.php?action=seance">Les seances</a>
-    <a href="../vue/login.php">Connexion</a>
-    <a href="deconnexion.php">Deconnexion</a>
+    <a href="../controleur/controller.php?action=login">Connexion</a>
+    <a href="../controleur/controller.php?action=logout">Deconnexion</a>
     <a href="inscription.php">Inscription</a>
   </nav>

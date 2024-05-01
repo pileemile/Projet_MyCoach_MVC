@@ -1,5 +1,12 @@
 <?php
+// Démarrez la session
 session_start();
+
+// Initialisez $_SESSION['connecte'] à false si ce n'est pas déjà défini
+if (!isset($_SESSION['connecte'])) {
+    $_SESSION['connecte'] = false;
+}
+
 require_once '../modele/coachModel.php';
 require_once '../modele/seanceModel.php';
 require_once '../modele/bd.inc.php';
@@ -8,6 +15,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : 'index';
 
 switch ($action) {
     case 'index':
+        var_dump( $_SESSION['connecte']);
         // Afficher la page d'accueil
         $presentation = getPresentation();
         $prestations = getPrestations();
@@ -25,19 +33,30 @@ switch ($action) {
         // Déconnecter l'utilisateur
         logout();
         break;
-    case 'seance':
-        $connexion = connexionPDO();
-        // Vérifier si l'indice 'jour' est défini dans $_POST
-        if(isset($_POST['jour'])) {
-            // Récupérer les séances en fonction du jour sélectionné
-            $seances = getSeances($connexion, $_POST['jour']);
-            // Inclure la vue seance.php
-            include('../vue/seance.php');
+     case 'seance':
+        var_dump( $_SESSION['connecte']);
+        // Vérifier si l'utilisateur est connecté
+        if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] !== true) {
+            // Si l'utilisateur n'est pas connecté, redirigez-le vers la page de connexion
+            header("Location: ../controleur/controller.php?action=login");
+            exit();
+        }
+        // L'utilisateur est connecté, continuez à récupérer les séances
+         $connexion = connexionPDO();
+         // Vérifier si $_POST['jour'] est défini
+        if (isset($_POST['jour'])) {
+               // Récupérer les séances en fonction du jour sélectionné
+              $seances = getSeances($connexion, $_POST['jour']);
+         } else {
+               // Gérer le cas où $_POST['jour'] n'est pas défini
+               // Peut-être rediriger l'utilisateur vers une autre page ou afficher un message d'erreur
+         }
+        // Inclure la vue seance.php
+        include('../vue/seance.php');
         break;
     default:
         // Gérer les cas d'action non valide
         break;
-}
 }
 
 function loginProcess() {
@@ -64,44 +83,34 @@ function loginProcess() {
 
         // Récupération du résultat
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        var_dump ($user);
         
         // Vérification du résultat
-        if ($user) {
-            // L'utilisateur existe 
-            // Vérification du mot de passe
-            if (($user['mdp'])==($mdp)) {
-                // Le mot de passe correspond
-
-                // Vous pouvez accéder aux valeurs de l'utilisateur
-                $_SESSION['nom'] = $user['nom']; // Stockage du nom dans la variable de session
-                $_SESSION['prenom'] = $user['prenom']; // Stockage du prénom dans la variable de session
-                $_SESSION['connecte'] = true;
-                header("Location: ../vue/seance.php");
-                exit;
-            } else {
-                //redirection vers la page de connexion 
-                header("Location: ../vue/login.php?error=" ).  $errorMessage;
-                exit;
-
-            }
+        if ($user && $user['mdp'] == $mdp) {
+            // L'utilisateur existe et le mot de passe est correct
+            // Vous pouvez accéder aux valeurs de l'utilisateur
+            $_SESSION['nom'] = $user['nom']; // Stockage du nom dans la variable de session
+            $_SESSION['prenom'] = $user['prenom']; // Stockage du prénom dans la variable de session
+            $_SESSION['connecte'] = true; // Définition de la variable de session pour indiquer que l'utilisateur est connecté
+            header("Location: ../controleur/controller.php?action=seance"); // Redirection vers la page des séances
+            exit;
         } else {
-                //redirection vers la page de connexion 
-                header("Location: ../vue/login.php?error=") .  $errorMessage;
-                exit;
-            }
-    } // Erreur de syntaxe corrigée ici
+            //redirection vers la page de connexion avec un message d'erreur
+            header("Location: ../controleur/controller.php?action=login" . $errorMessage);
+            exit;
+        }
+    }
 }
+
 function logout() {
-    // Déconnexion de l'utilisateur
-    if (isset($_SESSION['user'])) {
+        // Définir $_SESSION['connecte'] sur false
+        $_SESSION['connecte'] = false;
         // Supprimer toutes les variables de session
         session_unset();
         // Détruire la session
         session_destroy();
-    }
     // Rediriger vers la page d'accueil
-    header("Location: ../vue/index.php");
+    header("Location: ../controleur/controller.php?action=index");
     exit();
 }
+
 ?>
