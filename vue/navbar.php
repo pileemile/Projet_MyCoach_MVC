@@ -11,5 +11,5 @@
     <a href="../controleur/controller.php?action=seance">Les seances</a>
     <a href="../controleur/controller.php?action=login">Connexion</a>
     <a href="../controleur/controller.php?action=logout">Deconnexion</a>
-    <a href="inscription.php">Inscription</a>
+    <a href="../controleur/controller.php?action=inscription">Inscription</a>
   </nav>

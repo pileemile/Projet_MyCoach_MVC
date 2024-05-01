@@ -15,7 +15,7 @@ $action = isset($_GET['action']) ? $_GET['action'] : 'index';
 
 switch ($action) {
     case 'index':
-        var_dump( $_SESSION['connecte']);
+        var_dump($_SESSION['connecte']);
         // Afficher la page d'accueil
         $presentation = getPresentation();
         $prestations = getPrestations();
@@ -33,8 +33,8 @@ switch ($action) {
         // Déconnecter l'utilisateur
         logout();
         break;
-     case 'seance':
-        var_dump( $_SESSION['connecte']);
+    case 'seance':
+        var_dump($_SESSION['connecte']);
         // Vérifier si l'utilisateur est connecté
         if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] !== true) {
             // Si l'utilisateur n'est pas connecté, redirigez-le vers la page de connexion
@@ -42,17 +42,25 @@ switch ($action) {
             exit();
         }
         // L'utilisateur est connecté, continuez à récupérer les séances
-         $connexion = connexionPDO();
-         // Vérifier si $_POST['jour'] est défini
+        $connexion = connexionPDO();
+        // Vérifier si $_POST['jour'] est défini
         if (isset($_POST['jour'])) {
-               // Récupérer les séances en fonction du jour sélectionné
-              $seances = getSeances($connexion, $_POST['jour']);
-         } else {
-               // Gérer le cas où $_POST['jour'] n'est pas défini
-               // Peut-être rediriger l'utilisateur vers une autre page ou afficher un message d'erreur
-         }
+            // Récupérer les séances en fonction du jour sélectionné
+            $seances = getSeances($connexion, $_POST['jour']);
+        } else {
+            // Gérer le cas où $_POST['jour'] n'est pas défini
+            // Peut-être rediriger l'utilisateur vers une autre page ou afficher un message d'erreur
+        }
         // Inclure la vue seance.php
         include('../vue/seance.php');
+        break;
+    case 'inscription':
+        // Afficher le formulaire d'inscription
+        include('../vue/inscription.php');
+        break;
+    case 'inscriptionProcess':
+        // Traiter la soumission du formulaire d'inscription
+        inscriptionProcess();
         break;
     default:
         // Gérer les cas d'action non valide
@@ -83,7 +91,7 @@ function loginProcess() {
 
         // Récupération du résultat
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
-        
+
         // Vérification du résultat
         if ($user && $user['mdp'] == $mdp) {
             // L'utilisateur existe et le mot de passe est correct
@@ -102,15 +110,70 @@ function loginProcess() {
 }
 
 function logout() {
-        // Définir $_SESSION['connecte'] sur false
-        $_SESSION['connecte'] = false;
-        // Supprimer toutes les variables de session
-        session_unset();
-        // Détruire la session
-        session_destroy();
+    // Définir $_SESSION['connecte'] sur false
+    $_SESSION['connecte'] = false;
+    // Supprimer toutes les variables de session
+    session_unset();
+    // Détruire la session
+    session_destroy();
     // Rediriger vers la page d'accueil
     header("Location: ../controleur/controller.php?action=index");
     exit();
+}
+
+function inscriptionProcess() {
+    require '../modele/bd.inc.php';
+    $connexion = connexionPDO();
+    // Vérifier si le formulaire a été soumis
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Récupération des données du formulaire
+        $nom = $_POST['nom'];
+        $prenom = $_POST['prenom'];
+        $mail = $_POST['mail'];
+        $mdp = $_POST['mdp'];
+
+        // Requête de sélection pour vérifier si l'e-mail existe déjà
+        $sql = "SELECT * FROM utilisateur WHERE mail = :mail";
+
+        // Préparation de la requête
+        $stmt = $connexion->prepare($sql);
+
+        // Liaison des paramètres
+        $stmt->bindParam(':mail', $mail);
+
+        // Exécution de la requête
+        $stmt->execute();
+
+        // Récupération du résultat
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
+
+        // Vérification du résultat
+        if ($user) {
+            // L'e-mail existe déjà, rediriger avec un message d'erreur
+            $_SESSION['erreur_inscription'] = 'L\'adresse e-mail existe déjà.';
+            header("Location: ../controleur/controller.php?action=inscription");
+            exit;
+        } else {
+            // L'e-mail est unique, inscrire l'utilisateur
+            $sql = "INSERT INTO utilisateur (nom, prenom, mail, mdp) VALUES (:nom, :prenom, :mail, :mdp)";
+            // Préparation de la requête
+            $stmt = $connexion->prepare($sql);
+            // Liaison des paramètres
+            $stmt->bindParam(':nom', $nom);
+            $stmt->bindParam(':prenom', $prenom);
+            $stmt->bindParam(':mail', $mail);
+            $stmt->bindParam(':mdp', $mdp);
+            // Exécution de la requête
+            $stmt->execute();
+            
+            // Définir $_SESSION['connecte'] sur true
+            $_SESSION['connecte'] = true;
+            
+            // Redirection vers la page des séances
+            header("Location: ../controleur/controller.php?action=seance");
+            exit;
+        }
+    }
 }
 
 ?>
