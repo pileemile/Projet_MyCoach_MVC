@@ -35,6 +35,11 @@ switch ($action) {
         break;
     case 'seance':
         var_dump($_SESSION['connecte']);
+        var_dump($_SESSION['id_utilisateur']);
+        var_dump($_SESSION['nom']);
+        var_dump($_SESSION['prenom']);
+        var_dump($_SESSION['id_seance']);
+        
         // Vérifier si l'utilisateur est connecté
         if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] !== true) {
             // Si l'utilisateur n'est pas connecté, redirigez-le vers la page de connexion
@@ -62,26 +67,27 @@ switch ($action) {
         // Traiter la soumission du formulaire d'inscription
         inscriptionProcess();
         break;
-        case 'inscriptionSeance':
-            $id_seance = isset($_POST['id_seance']) ? $_POST['id_seance'] : null;
-            $nom = isset($_POST['nom']) ? $_POST['nom'] : null;
-            $prenom = isset($_POST['prenom']) ? $_POST['prenom'] : null;
-            
-            // Appel de la fonction d'inscription à la séance depuis le modèle
-            $resultatInscription = inscriptionSeance($connexion, $id_seance, $nom, $prenom);
-            if ($resultatInscription) {
-                // Affichez un message de succès en utilisant JavaScript
-                echo '<script>alert("Inscription réussie !");</script>';
-                // Redirigez vers une page de confirmation ou autre
-                header("Location: ../controleur/controller.php?action=seance");
-                exit;
-            } else {
-                // Affichez un message d'échec en utilisant JavaScript
-                echo '<script>alert("Échec de l\'inscription. Veuillez réessayer.");</script>';
-                // Gérez l'échec de l'inscription
-                // Peut-être afficher un message d'erreur ou rediriger vers une autre page
-            }
-            break;
+    case 'inscriptionSeance':
+        $connexion = connexionPDO();
+        $id_seance = isset($_POST['id_seance']) ? $_POST['id_seance'] : null;
+        $nom = isset($_POST['nom']) ? $_POST['nom'] : null;
+        $prenom = isset($_POST['prenom']) ? $_POST['prenom'] : null;
+        $id_utilisateur = isset($_POST['id_utilisateur']) ? $_POST['id_utilisateur'] : null;     
+        // Appel de la fonction d'inscription à la séance depuis le modèle
+        $resultatInscription = inscriptionSeance($connexion, $id_seance, $id_utilisateur, $nom, $prenom);
+        if ($resultatInscription) {
+            // Affichez un message de succès en utilisant JavaScript
+             echo '<script>alert("Inscription réussie !");</script>';
+            // Redirigez vers une page de confirmation ou autre
+            header("Location: ../controleur/controller.php?action=seance");
+            exit;
+        } else {
+            // Affichez un message d'échec en utilisant JavaScript
+             echo '<script>alert("Échec de l\'inscription. Veuillez réessayer.");</script>';
+            // Gérez l'échec de l'inscription
+            // Peut-être afficher un message d'erreur ou rediriger vers une autre page
+        }
+         break;
         
     default:
         // Gérer les cas d'action non valide
@@ -112,6 +118,9 @@ function loginProcess() {
 
         // Récupération du résultat
         $user = $stmt->fetch(PDO::FETCH_ASSOC);
+        $_SESSION['id_utilisateur'] = $user['id'];
+        $_SESSION['nom'] = $user['nom'];
+        $_SESSION['prenom'] = $user['prenom'];
 
         // Vérification du résultat
         if ($user && $user['mdp'] == $mdp) {
