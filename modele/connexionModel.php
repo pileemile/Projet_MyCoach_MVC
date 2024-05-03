@@ -29,7 +29,7 @@ function connecterUtilisateur($mail, $mdp) {
     if ($user) {
         // L'utilisateur existe
         // Vérification du mot de passe
-        if ($user['mdp'] == $mdp) {
+        if (password_verify($mdp, $user['mdp'])) {
             // Le mot de passe correspond
             return $user;
         } else {
