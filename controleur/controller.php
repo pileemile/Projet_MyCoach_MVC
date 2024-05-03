@@ -88,6 +88,22 @@ switch ($action) {
             // Peut-être afficher un message d'erreur ou rediriger vers une autre page
         }
          break;
+        case 'recapitulatifInscriptions':
+        // Vérifier si l'utilisateur est connecté
+            if (!isset($_SESSION['connecte']) || $_SESSION['connecte'] !== true) {
+                // Si l'utilisateur n'est pas connecté, redirigez-le vers la page de connexion
+                header("Location: ../controleur/controller.php?action=login");
+                exit();
+            }
+        
+        // Récupérer les inscriptions de l'utilisateur depuis le modèle
+        $connexion = connexionPDO();
+        $id_utilisateur = $_SESSION['id_utilisateur'];
+        $inscriptions = getInscriptionsUtilisateur($connexion, $id_utilisateur);
+        
+        // Inclure la vue pour afficher le récapitulatif des inscriptions
+        include('../vue/Recap_inscription.php');
+        break;
         
     default:
         // Gérer les cas d'action non valide

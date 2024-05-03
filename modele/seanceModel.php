@@ -90,6 +90,30 @@ function dejaInscrit($connexion, $id_utilisateur, $id_seance) {
         return false; // L'utilisateur n'est pas inscrit à la séance
     }
 }
+function getInscriptionsUtilisateur($connexion, $id_utilisateur) {
+    // Requête pour récupérer les séances auxquelles l'utilisateur est inscrit
+    $sql = "SELECT s.*, sport.Nom AS sport_nom, niveau.niveau AS niveau
+    FROM seance s 
+    INNER JOIN inscriptionseance i ON s.id = i.id_seance 
+    INNER JOIN sport ON s.id_sport = sport.ID
+    INNER JOIN niveau ON s.id_niveau = niveau.id
+    WHERE i.id_utilisateur = :id_utilisateur";
+    
+    // Préparation de la requête
+    $stmt = $connexion->prepare($sql);
+    
+    // Liaison des paramètres
+    $stmt->bindParam(':id_utilisateur', $id_utilisateur);
+    
+    // Exécution de la requête
+    $stmt->execute();
+    
+    // Récupération des résultats
+    $inscriptions = $stmt->fetchAll(PDO::FETCH_ASSOC);
+    
+    // Retourner les inscriptions de l'utilisateur
+    return $inscriptions;
+}
 
 
 ?>
