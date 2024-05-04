@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Hôte : 127.0.0.1
--- Généré le :  ven. 03 mai 2024 à 12:40
+-- Généré le :  sam. 04 mai 2024 à 16:15
 -- Version du serveur :  5.7.17
 -- Version de PHP :  5.6.30
 
@@ -41,10 +41,15 @@ CREATE TABLE `inscriptionseance` (
 --
 
 INSERT INTO `inscriptionseance` (`id`, `id_seance`, `id_utilisateur`, `Nom`, `Prenom`) VALUES
-(1, 3, 8, 'PICARD', 'Emile'),
-(2, 2, 8, 'PICARD', 'Emile'),
-(3, 4, 8, 'PICARD', 'Emile'),
-(4, 10, 8, 'PICARD', 'Emile');
+(5, 1, 15, 'PICARD', 'Emile'),
+(6, 7, 15, 'PICARD', 'Emile'),
+(7, 3, 16, 'Dupont', 'Antoine'),
+(8, 7, 16, 'Dupont', 'Antoine'),
+(9, 1, 16, 'Dupont', 'Antoine'),
+(10, 15, 16, 'Dupont', 'Antoine'),
+(11, 8, 16, 'Dupont', 'Antoine'),
+(12, 11, 16, 'Dupont', 'Antoine'),
+(13, 2, 15, 'PICARD', 'Emile');
 
 -- --------------------------------------------------------
 
@@ -121,7 +126,11 @@ INSERT INTO `seance` (`id`, `id_sport`, `id_niveau`, `horraire`, `jour`, `id_sal
 (9, 2, 2, '11h-12h', 'Lundi', 2),
 (10, 3, 3, '7h-10h', 'Lundi', 3),
 (11, 4, 3, '12h-13h', 'Mardi', 3),
-(12, 4, 2, '16h-17h', 'Mardi', 3);
+(12, 4, 2, '16h-17h', 'Mardi', 3),
+(13, 1, 2, '10h-11h', 'Lundi', 1),
+(14, 1, 2, '10h-11h', 'Jeudi', 1),
+(15, 3, 1, '14h-15h', 'Jeudi', 3),
+(16, 2, 3, '16h-17h', 'Jeudi', 2);
 
 -- --------------------------------------------------------
 
@@ -155,7 +164,7 @@ CREATE TABLE `utilisateur` (
   `nom` varchar(50) COLLATE utf8_bin NOT NULL,
   `prenom` varchar(50) COLLATE utf8_bin NOT NULL,
   `mail` varchar(50) COLLATE utf8_bin NOT NULL,
-  `mdp` varchar(50) COLLATE utf8_bin NOT NULL
+  `mdp` varchar(255) COLLATE utf8_bin NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8 COLLATE=utf8_bin;
 
 --
@@ -163,11 +172,8 @@ CREATE TABLE `utilisateur` (
 --
 
 INSERT INTO `utilisateur` (`id`, `nom`, `prenom`, `mail`, `mdp`) VALUES
-(1, 'Dupont', 'Antoine', 'dupont@gmail.com', 'Numero1'),
-(2, 'Durant', 'Gerare', 'durant.gege@gmail.com', 'Azerty31'),
-(3, 'meafou', 'emmanuel', 'meafouemma@gmail.com', 'emmaMea32'),
-(8, 'PICARD', 'Emile', 'emilepicard323@gmail.com', '123'),
-(11, 'tyry', 'gyth', 'thgy@gmail.com', '122');
+(15, 'PICARD', 'Emile', 'emilepicard323@gmail.com', '$2y$10$YngXadNmF6/dg7Egr5WijedEE8uZbM/hX.Rwmg/RBZxjJk7eF5AQC'),
+(16, 'Dupont', 'Antoine', 'dupont.antoine@gmail.com', '$2y$10$X3TnssqzgxK3EBf4HDJVFOfaz4ZeEOfNitAIcboDDoPduiVx1gDOi');
 
 --
 -- Index pour les tables déchargées
@@ -224,12 +230,12 @@ ALTER TABLE `utilisateur`
 -- AUTO_INCREMENT pour la table `inscriptionseance`
 --
 ALTER TABLE `inscriptionseance`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=5;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=14;
 --
 -- AUTO_INCREMENT pour la table `utilisateur`
 --
 ALTER TABLE `utilisateur`
-  MODIFY `id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=12;
+  MODIFY `id` int(3) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=17;
 --
 -- Contraintes pour les tables déchargées
 --

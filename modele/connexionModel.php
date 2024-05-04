@@ -1,42 +1,43 @@
 <?php
-require 'includes/conexion.php'; // Inclure le fichier de connexion à la base de données
-session_start();
+require_once 'bd.inc.php';
+function loginProcess() {
+    $connexion = connexionPDO();
+    // Vérifier si le formulaire a été soumis
+    if ($_SERVER['REQUEST_METHOD'] === 'POST') {
+        // Récupération de l'adresse e-mail et du mot de passe
+        $mail = $_POST['mail'];
+        $mdp = $_POST['mdp'];
+        $_SESSION['mail'] = $mail; // Stockage de l'adresse e-mail dans la variable de session
 
-// Vérifier si $_SESSION['id_utilisateur'] est définie
-if (!isset($_SESSION['id_utilisateur'])) {
-    $_SESSION['id_utilisateur'] = null; // Initialiser la variable de session à null si elle n'est pas encore définie
-}
+        // Requête de sélection
+        $sql = "SELECT * FROM utilisateur WHERE mail = :mail";
 
-function connecterUtilisateur($mail, $mdp) {
-    global $connexion; // Utiliser la connexion à la base de données définie dans includes/conexion.php
+        // Préparation de la requête
+        $stmt = $connexion->prepare($sql);
 
-    // Requête de sélection
-    $sql = "SELECT * FROM utilisateur WHERE mail = :mail";
+        // Liaison des paramètres
+        $stmt->bindParam(':mail', $mail);
 
-    // Préparation de la requête
-    $stmt = $connexion->prepare($sql);
+        // Exécution de la requête
+        $stmt->execute();
 
-    // Liaison des paramètres
-    $stmt->bindParam(':mail', $mail);
+        // Récupération du résultat
+        $user = $stmt->fetch(PDO::FETCH_ASSOC);
 
-    // Exécution de la requête
-    $stmt->execute();
-
-    // Récupération du résultat
-    $user = $stmt->fetch(PDO::FETCH_ASSOC);
-
-    // Vérification du résultat
-    if ($user) {
-        // L'utilisateur existe
-        // Vérification du mot de passe
-        if (password_verify($mdp, $user['mdp'])) {
-            // Le mot de passe correspond
-            return $user;
+        if ($user && password_verify($mdp, $user['mdp'])) {
+            // L'utilisateur existe et le mot de passe est correct
+            $_SESSION['id_utilisateur'] = $user['id'];
+            $_SESSION['nom'] = $user['nom'];
+            $_SESSION['prenom'] = $user['prenom'];
+            $_SESSION['connecte'] = true; // Définition de la variable de session pour indiquer que l'utilisateur est connecté
+            header("Location: ../controleur/controller.php?action=seance"); // Redirection vers la page des séances
+            exit;
         } else {
-            return false; // Le mot de passe ne correspond pas
+            // Redirection vers la page de connexion avec un message d'erreur
+            $errorMessage = "Identifiants incorrects";
+            header("Location: ../controleur/controller.php?action=login&error=" . urlencode($errorMessage));
+            exit;
         }
-    } else {
-        return false; // L'utilisateur n'existe pas
     }
 }
 ?>
